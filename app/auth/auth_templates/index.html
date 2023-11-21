@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication</title>
+</head>
+<body>
+
+<div id="register-form" style="display:none;">
+    <h2>Register</h2>
+    <form id="register-form">
+        <label for="reg-username">Username:</label>
+        <input type="text" id="reg-username" required>
+        <label for="reg-password">Password:</label>
+        <input type="password" id="reg-password" required>
+        <button type="button" onclick="register()">Register</button>
+    </form>
+</div>
+
+<div id="login-form">
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" required>
+        <label for="login-password">Password:</label>
+        <input type="password" id="login-password" required>
+        <button type="button" onclick="login()">Login</button>
+    </form>
+</div>
+
+<div id="profile-form" style="display:none;">
+    <h2>Update Profile</h2>
+    <form id="profile-form">
+        <label for="new-username">New Username:</label>
+        <input type="text" id="new-username">
+        <label for="new-password">New Password:</label>
+        <input type="password" id="new-password">
+        <button type="button" onclick="updateProfile()">Update Profile</button>
+    </form>
+</div>
+
+<div id="user-details" style="display:none;">
+    <h2>User Details</h2>
+    <div id="user-details-content"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

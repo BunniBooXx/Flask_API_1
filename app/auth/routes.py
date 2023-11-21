@@ -1,8 +1,16 @@
 from . import auth_blueprint as auth
-from flask_jwt_extended import create_access_token
-from flask import request, make_response
+from flask_login import  login_user, login_required,current_user
+from werkzeug.security import generate_password_hash
+from flask import request, make_response, render_template
 from ..models import Customer
 from datetime import timedelta 
+
+
+
+
+@auth.route('/')
+def index():
+    return render_template('index.html')
 
 
 @auth.post('/register')
@@ -70,6 +78,7 @@ def handle_login():
         response = {
             "message": "password is required"
         }
+        return response, 400
 
     customer = Customer.query.filter_by(username=username).one_or_none()
     if customer is None: 
@@ -85,12 +94,79 @@ def handle_login():
 
         }
         return response, 401
+    login_user(customer)
     
+    response = {
+        "message": "successfully logged in"
+    }
 
-
-    auth_token = create_access_token(identity=customer.id, expires_delta=timedelta(days=1))
-
-    response = make_response({"message": "successfully logged in"})
-    response.headers["Authorization"] = f"Bearer {auth_token}"
     return response , 200
+
+
     
+
+
+from flask_login import login_required, current_user
+
+@auth.put('/update-profile')
+@login_required
+def update_profile():
+    customer = current_user  # Use Flask-Login's current_user
+
+    # Get data from the request JSON
+    body = request.json
+    new_username = body.get("new_username")
+    new_password = body.get("new_password")
+
+    # Update username if provided
+    if new_username is not None:
+        customer.username = new_username
+
+    # Update password if provided
+    if new_password is not None:
+        hashed_password = generate_password_hash(new_password)
+        customer.password = hashed_password
+
+    # Save changes to the database
+    customer.save()
+
+    response = {
+        "success": True,
+        "message": "Profile updated successfully",
+        "data": customer.to_response() 
+    }
+
+    return response, 200
+
+
+@auth.delete('/delete-account')
+@login_required
+def delete_account():
+    try:
+        # Get the current user's identity from the JWT
+        current_user_id = current_user.get_id()
+
+        # Query the database to get the customer object
+        customer = Customer.query.get(current_user_id)
+
+        # Delete the customer account
+        customer.delete()
+
+        # Create a response
+        response = {
+            "message": "Account deleted successfully",
+        }
+
+        return response, 200
+
+    except Exception as e:
+        # Handle exceptions, log errors, etc.
+        print(f"Error deleting account: {str(e)}")
+        response = {
+            "message": "An error occurred while deleting the account",
+        }
+        return response, 500
+
+
+
+

@@ -19,6 +19,10 @@ class Customer(db.Model):
         self.username= username
         self.password = generate_password_hash(password)
 
+    def is_active(self):
+      
+        return True 
+
     def compare_password(self,password):
         return check_password_hash(self.password, password)
     
